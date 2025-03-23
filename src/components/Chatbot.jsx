@@ -1,19 +1,42 @@
 // src/components/Chatbot.jsx
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { useParams } from 'react-router-dom';
 import './Chatbot.css';
 
 function Chatbot() {
+  const { id } = useParams();
   const [messages, setMessages] = useState([
     { text: "Hello! I noticed you have items in your cart. Want to discuss a special offer?", sender: 'bot' }
   ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false); // New state for loading indicator
+  const chatMessagesRef = useRef(null);
+  const [product, setProduct] = useState({ name: '', price: '', url: '' });
+  const [isInputDisabled, setIsInputDisabled] = useState(false);
+  const [finalPrice, setFinalPrice] = useState('');
+  const [showPopup, setShowPopup] = useState(false);
 
-  const product = {
-    name: "Premium Wireless Headphones",
-    price: "$199.99",
-    url: "https://www.amazon.com/Sony-WH-1000XM5-Canceling-Headphones-Hands-Free/dp/B09XS7JWHH/ref=sr_1_1_sspa?dib=eyJ2IjoiMSJ9.YRFLJECEITNU402ZpvF6W5hqUQHQbPUgN22x47slryTYso9QfHvA1HYXZrTqHB_yw9ig5L2F5qHB0N4RcpswlsSNPa6tqLy9b8_jEGP4Qp6mEBkmdZFoNzeyIa-wTbO63ZeaoejIsJU-lsnrI6X6xWwbBw_EG3f0prisyqyT0yAZbCcIL8PK765J_WnKUSjo6LvD_PbdwnUbXP6K94PfjU0E8NSnn6gkFe4PKKcnqLs.C_1qwyy_zmwXLoVOMvaIaeqV8aT4-aJq5Zw4KspxMuo&dib_tag=se&keywords=premium%2Bheadphones&qid=1742720885&sr=8-1-spons&sp_csd=d2lkZ2V0TmFtZT1zcF9hdGY&th=1"
-  };
+  useEffect(() => {
+    const fetchDetails = async () => {
+      try {
+        const response = await fetch(`/api/details?id=${id}`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch details');
+        }
+        const data = await response.json();
+        setProduct({
+          name: data.product_name,
+          price: data.cartValue,
+          url: data.url // Hardcoded URL
+        });
+      } catch (error) {
+        console.error('Error fetching details:', error);
+        setProduct({ name: 'Error', price: 'Error', url: '' });
+      }
+    };
+
+    fetchDetails();
+  }, [id]);
 
   const handleSend = async () => {
     if (input.trim()) {
@@ -22,15 +45,17 @@ function Chatbot() {
       setIsLoading(true); // Show loading indicator
 
       try {
+        const fullMessageHistory = [...messages, { text: input, sender: 'user' }]
+          .map(msg => `${msg.sender}: ${msg.text}`)
+          .join('\n');
+
         // Call the Vercel Function with OpenRouter integration
         const response = await fetch('/api/negotiate', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            cartValue: 199.99,
-            pastPurchases: 2,
-            sessionTime: 300,
-            userMessage: input
+            id: id,
+            userMessage: fullMessageHistory
           })
         });
 
@@ -40,7 +65,14 @@ function Chatbot() {
 
         const data = await response.json();
         // Add the bot's negotiation response to chat
-        setMessages(prev => [...prev, { text: data.message, sender: 'bot' }]);
+        if (!data.message.includes("##END OF CONVERSATION##")) {
+          setMessages(prev => [...prev, { text: data.message, sender: 'bot' }]);
+        } else {
+          setIsInputDisabled(true);
+          const price = data.message.split("##END OF CONVERSATION##")[0].trim();
+          setFinalPrice(price);
+          setShowPopup(true);
+        }
       } catch (error) {
         console.error('Error calling negotiate API:', error);
         setMessages(prev => [...prev, { text: 'Sorry, I couldn’t process that. Try again!', sender: 'bot' }]);
@@ -52,6 +84,13 @@ function Chatbot() {
       setInput('');
     }
   };
+
+  useEffect(() => {
+    // Scroll to bottom when messages update
+    if (chatMessagesRef.current) {
+      chatMessagesRef.current.scrollTop = chatMessagesRef.current.scrollHeight;
+    }
+  }, [messages]);
 
   return (
     <div className="chatbot-container">
@@ -65,7 +104,7 @@ function Chatbot() {
         </a>
       </header>
       
-      <div className="chat-messages">
+      <div className="chat-messages" ref={chatMessagesRef}>
         {isLoading && (
           <div className="loading-indicator">Agent is typing...</div>
         )}
@@ -86,9 +125,20 @@ function Chatbot() {
           onChange={(e) => setInput(e.target.value)}
           placeholder="Type your message..."
           onKeyPress={(e) => e.key === 'Enter' && handleSend()}
+          disabled={isInputDisabled}
         />
-        <button onClick={handleSend}>Send</button>
+        <button onClick={handleSend} disabled={isInputDisabled}>Send</button>
       </div>
+      {showPopup && (
+        <div className="popup">
+          <div className="popup-content">
+            <h2>Final Price: {finalPrice}</h2>
+            <a href={product.url} target="_blank" rel="noopener noreferrer">
+              View Product
+            </a>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
