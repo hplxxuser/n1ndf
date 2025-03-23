@@ -7,7 +7,7 @@ export default async function handler(req, res) {
   const { cartValue, pastPurchases, sessionTime, userMessage } = req.body;
 
   // OpenRouter API details
-  const apiKey = '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';
+  const apiKey = process.env.OPENROUTER_API_KEY;
   const endpoint = 'https://openrouter.ai/api/v1/chat/completions';
 
   // Define the prompt for negotiation, including the user's message
