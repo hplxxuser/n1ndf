@@ -7,7 +7,7 @@ export default async function handler(req, res) {
   const { cartValue, pastPurchases, sessionTime, userMessage } = req.body;
 
   // OpenRouter API details
-  const apiKey = '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';
+  const apiKey = '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';
   const endpoint = 'https://openrouter.ai/api/v1/chat/completions';
 
   // Define the prompt for negotiation, including the user's message
@@ -33,8 +33,6 @@ export default async function handler(req, res) {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${apiKey}`,
-        'HTTP-Referer': 'https://your-vercel-app.vercel.app', // Optional
-        'X-Title': 'DhamakaDeals' // Optional
       },
       body: JSON.stringify({
         model: 'google/gemini-2.0-flash-exp:free', // Free-tier model added here

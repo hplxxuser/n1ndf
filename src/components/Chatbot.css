@@ -1,14 +1,15 @@
+/* src/components/Chatbot.css */
 .chatbot-container {
     width: 100%;
-    max-width: 450px; /* Slightly wider for better desktop appearance */
-    height: 650px; /* Slightly taller */
+    max-width: 450px;
+    height: 650px;
     background: white;
     border-radius: 12px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    margin: 0 auto; /* Additional centering */
+    margin: 0 auto;
   }
   
   .chatbot-header {
@@ -22,7 +23,7 @@
   
   .product-info h2 {
     margin: 0;
-    font-size: 18px; /* Slightly larger for desktop */
+    font-size: 18px;
     font-weight: 500;
   }
   
@@ -50,6 +51,14 @@
     display: flex;
     flex-direction: column;
     gap: 15px;
+  }
+  
+  .loading-indicator {
+    align-self: center;
+    font-size: 14px;
+    color: #666;
+    font-style: italic;
+    margin-bottom: 10px;
   }
   
   .message {
@@ -82,7 +91,7 @@
   
   .chat-input input {
     flex: 1;
-    padding: 10px 15px; /* Slightly larger padding */
+    padding: 10px 15px;
     border: 1px solid #ddd;
     border-radius: 6px;
     font-size: 14px;
@@ -94,7 +103,7 @@
   }
   
   .chat-input button {
-    padding: 10px 25px; /* Slightly larger button */
+    padding: 10px 25px;
     background: #3498db;
     color: white;
     border: none;
@@ -108,10 +117,9 @@
     background: #2980b9;
   }
   
-  /* Media query for larger screens */
   @media (min-width: 768px) {
     .chatbot-container {
-      max-width: 480px; /* Optimal width for desktop */
+      max-width: 480px;
     }
     
     .product-info h2 {
