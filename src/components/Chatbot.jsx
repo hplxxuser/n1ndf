@@ -13,19 +13,40 @@ function Chatbot() {
     url: "https://www.amazon.com/Sony-WH-1000XM5-Canceling-Headphones-Hands-Free/dp/B09XS7JWHH/ref=sr_1_1_sspa?dib=eyJ2IjoiMSJ9.YRFLJECEITNU402ZpvF6W5hqUQHQbPUgN22x47slryTYso9QfHvA1HYXZrTqHB_yw9ig5L2F5qHB0N4RcpswlsSNPa6tqLy9b8_jEGP4Qp6mEBkmdZFoNzeyIa-wTbO63ZeaoejIsJU-lsnrI6X6xWwbBw_EG3f0prisyqyT0yAZbCcIL8PK765J_WnKUSjo6LvD_PbdwnUbXP6K94PfjU0E8NSnn6gkFe4PKKcnqLs.C_1qwyy_zmwXLoVOMvaIaeqV8aT4-aJq5Zw4KspxMuo&dib_tag=se&keywords=premium%2Bheadphones&qid=1742720885&sr=8-1-spons&sp_csd=d2lkZ2V0TmFtZT1zcF9hdGY&th=1"
   }
 
-  const handleSend = () => {
+  const handleSend = async () => {
     if (input.trim()) {
-      setMessages([...messages, { text: input, sender: 'user' }])
-      // Simulate bot response (in reality, this would come from your AI model)
-      setTimeout(() => {
-        setMessages(prev => [...prev, { 
-          text: `Based on your cart, I can offer you a 15% discount. Would that work for you?`, 
-          sender: 'bot' 
-        }])
-      }, 1000)
-      setInput('')
+      // Add user's message to chat
+      setMessages(prev => [...prev, { text: input, sender: 'user' }]);
+
+      try {
+        // Call the Vercel Function with OpenRouter integration
+        const response = await fetch('/api/negotiate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            cartValue: 199.99, // Example value; replace with real data if available
+            pastPurchases: 2,  // Example value
+            sessionTime: 300,   // Example value (in seconds)
+            userMessage: input
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error('API request failed');
+        }
+
+        const data = await response.json();
+        // Add the bot's negotiation response to chat
+        setMessages(prev => [...prev, { text: data.message, sender: 'bot' }]);
+      } catch (error) {
+        console.error('Error calling negotiate API:', error);
+        setMessages(prev => [...prev, { text: 'Sorry, I couldn’t process that. Try again!', sender: 'bot' }]);
+      }
+
+      // Clear input field
+      setInput('');
     }
-  }
+  };
 
   return (
     <div className="chatbot-container">
