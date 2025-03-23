@@ -1,0 +1,128 @@
+.chatbot-container {
+    width: 100%;
+    max-width: 450px; /* Slightly wider for better desktop appearance */
+    height: 650px; /* Slightly taller */
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    margin: 0 auto; /* Additional centering */
+  }
+  
+  .chatbot-header {
+    padding: 15px 20px;
+    background: #2c3e50;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .product-info h2 {
+    margin: 0;
+    font-size: 18px; /* Slightly larger for desktop */
+    font-weight: 500;
+  }
+  
+  .product-info p {
+    margin: 5px 0 0;
+    font-size: 14px;
+    opacity: 0.9;
+  }
+  
+  .chatbot-header a {
+    color: #3498db;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+  }
+  
+  .chatbot-header a:hover {
+    text-decoration: underline;
+  }
+  
+  .chat-messages {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .message {
+    max-width: 80%;
+    padding: 10px 15px;
+    border-radius: 8px;
+    font-size: 14px;
+    line-height: 1.4;
+  }
+  
+  .user-message {
+    background: #3498db;
+    color: white;
+    align-self: flex-end;
+  }
+  
+  .bot-message {
+    background: #ecf0f1;
+    color: #2c3e50;
+    align-self: flex-start;
+  }
+  
+  .chat-input {
+    padding: 15px;
+    border-top: 1px solid #ecf0f1;
+    display: flex;
+    gap: 10px;
+    background: white;
+  }
+  
+  .chat-input input {
+    flex: 1;
+    padding: 10px 15px; /* Slightly larger padding */
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    outline: none;
+  }
+  
+  .chat-input input:focus {
+    border-color: #3498db;
+  }
+  
+  .chat-input button {
+    padding: 10px 25px; /* Slightly larger button */
+    background: #3498db;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.2s;
+  }
+  
+  .chat-input button:hover {
+    background: #2980b9;
+  }
+  
+  /* Media query for larger screens */
+  @media (min-width: 768px) {
+    .chatbot-container {
+      max-width: 480px; /* Optimal width for desktop */
+    }
+    
+    .product-info h2 {
+      font-size: 20px;
+    }
+    
+    .chatbot-header a {
+      font-size: 15px;
+    }
+    
+    .message {
+      font-size: 15px;
+    }
+  }
